@@ -23,13 +23,23 @@ export async function registerUser(request, username) {
 export async function getCurrentUser(request) {
   const session = await getSession(request.headers.get('Cookie'));
   const userSession = session.get('username');
-  return userSession;
+  return userSession || null;
 }
 
 export async function loginUser(request, username) {
   const session = await getSession(request.headers.get('Cookie'));
   session.set('username', username);
   throw redirect('/', {
+    headers: {
+      'Set-Cookie': await commitSession(session),
+    },
+  });
+}
+
+export async function logoutUser(request) {
+  const session = await getSession(request.headers.get('Cookie'));
+  session.set('username');
+  throw redirect('/auth/login', {
     headers: {
       'Set-Cookie': await commitSession(session),
     },

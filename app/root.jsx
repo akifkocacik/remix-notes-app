@@ -1,4 +1,5 @@
 import styles from '~/styles/main.css';
+import { getCurrentUser } from './session.server';
 
 import {
   Links,
@@ -7,10 +8,18 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from '@remix-run/react';
 import MainNavigation from '~/components/MainNavigation';
 
+export async function loader({ request }) {
+  const username = await getCurrentUser(request);
+  return username;
+}
+
 export default function App() {
+  const username = useLoaderData();
+
   return (
     <html lang="en">
       <head>
@@ -21,7 +30,7 @@ export default function App() {
       </head>
       <body>
         <header>
-          <MainNavigation />
+          <MainNavigation username={username} />
         </header>
         <Outlet />
         <ScrollRestoration />
