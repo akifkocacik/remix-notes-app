@@ -36,6 +36,7 @@ export async function action({ request }) {
 }
 export async function loader({ request }) {
   const user = await getCurrentUser(request);
+
   if (user) {
     throw redirect('/');
   }

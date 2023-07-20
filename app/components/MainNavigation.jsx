@@ -22,7 +22,7 @@ export default function MainNavigation({ username }) {
   );
 }
 
-// website.com/auth/login&redirectTo=/notes
+// website.com/auth/login?redirectTo=/notes
 // custom redirect fonksiyonu olustucaz ve bunu cagiricaz
 // bu fonksiyon once redirectTo var mi check edecek. varsa oraya yonlendirecek
 // yoksa ana sayfaya yonlendirecek.

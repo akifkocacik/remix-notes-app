@@ -5,6 +5,7 @@ import { useLoaderData } from '@remix-run/react';
 import NoteList, { links as noteListLinks } from '../components/NoteList';
 import { getCurrentUser } from '../session.server';
 import { deleteNote } from '../data/notes';
+import { unauthorizedRedirect } from '../utils';
 
 export default function NotesPage() {
   const notes = useLoaderData();
@@ -19,7 +20,7 @@ export default function NotesPage() {
 
 export async function loader({ request }) {
   const currentUser = await getCurrentUser(request);
-  if (!currentUser) throw redirect('/auth/login');
+  if (!currentUser) unauthorizedRedirect(request);
   const notes = await getStoredNotes();
   return notes;
 }

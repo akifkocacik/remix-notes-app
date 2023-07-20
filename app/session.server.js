@@ -1,6 +1,7 @@
 import { createCookieSessionStorage, redirect } from '@remix-run/node'; // or cloudflare/deno
+import { safeRedirect } from './utils';
 
-const { getSession, commitSession, destroySession } =
+export const { getSession, commitSession, destroySession } =
   createCookieSessionStorage({
     // a Cookie from `createCookie` or the same CookieOptions to create one
     cookie: {
@@ -27,13 +28,11 @@ export async function getCurrentUser(request) {
 }
 
 export async function loginUser(request, username) {
+  let params = new URL(request.url).searchParams;
+  let redirectTo = params.get('redirectTo');
   const session = await getSession(request.headers.get('Cookie'));
   session.set('username', username);
-  throw redirect('/', {
-    headers: {
-      'Set-Cookie': await commitSession(session),
-    },
-  });
+  await safeRedirect(redirectTo, session);
 }
 
 export async function logoutUser(request) {
