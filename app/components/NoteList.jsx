@@ -10,15 +10,7 @@ function NoteList({ notes }) {
               <ul className="note-meta">
                 <li>#{index + 1}</li>
                 <li>
-                  <time dateTime={note.id}>
-                    {new Date(note.id).toLocaleDateString('en-US', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </time>
+                  <time dateTime={note.id}>{note.createdAt}</time>
                 </li>
               </ul>
               <h2>{note.title}</h2>

@@ -1,11 +1,12 @@
 import NewNote, { links as newNoteLinks } from '~/components/NewNote';
-import { getStoredNotes, storeNotes } from '~/data/notes';
+
 import { redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import NoteList, { links as noteListLinks } from '../components/NoteList';
 import { getCurrentUser } from '../session.server';
-import { deleteNote } from '../data/notes';
+
 import { unauthorizedRedirect } from '../utils';
+import { getNotes, addNote, deleteNote } from '../services/note.service';
 
 export default function NotesPage() {
   const notes = useLoaderData();
@@ -21,7 +22,7 @@ export default function NotesPage() {
 export async function loader({ request }) {
   const currentUser = await getCurrentUser(request);
   if (!currentUser) unauthorizedRedirect(request);
-  const notes = await getStoredNotes();
+  const notes = await getNotes();
   return notes;
 }
 
@@ -32,14 +33,14 @@ export async function action({ request }) {
   if (intent === 'add') {
     const noteData = Object.fromEntries(formData);
     // Add validation
-    const existingNotes = await getStoredNotes();
-    noteData.id = new Date().toISOString();
-    const updatedNotes = existingNotes.concat(noteData);
-    await storeNotes(updatedNotes);
+    await addNote({
+      title: noteData.title,
+      content: noteData.content,
+    });
     return redirect('/notes');
   } else if (intent === 'delete') {
     const noteId = await formData.get('noteId');
-    await deleteNote(noteId);
+    await deleteNote({ id: parseInt(noteId) });
     return redirect('/notes');
   } else {
     return null;
