@@ -1,5 +1,5 @@
 import { redirect } from '@remix-run/node';
-import { findUser } from '../data/users';
+import { findUser } from '../services/user.service';
 import { getCurrentUser, loginUser } from '../session.server';
 import { useActionData } from '@remix-run/react';
 

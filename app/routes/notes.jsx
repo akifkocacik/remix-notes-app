@@ -6,7 +6,11 @@ import NoteList, { links as noteListLinks } from '../components/NoteList';
 import { getCurrentUser } from '../session.server';
 
 import { unauthorizedRedirect } from '../utils';
-import { getNotes, addNote, deleteNote } from '../services/note.service';
+import {
+  getNotesByUsername,
+  addNote,
+  deleteNote,
+} from '../services/note.service';
 
 export default function NotesPage() {
   const notes = useLoaderData();
@@ -22,13 +26,14 @@ export default function NotesPage() {
 export async function loader({ request }) {
   const currentUser = await getCurrentUser(request);
   if (!currentUser) unauthorizedRedirect(request);
-  const notes = await getNotes();
+  const notes = await getNotesByUsername(currentUser);
   return notes;
 }
 
 export async function action({ request }) {
   const formData = await request.formData();
   const intent = await formData.get('intent');
+  const user = await getCurrentUser(request);
 
   if (intent === 'add') {
     const noteData = Object.fromEntries(formData);
@@ -36,6 +41,7 @@ export async function action({ request }) {
     await addNote({
       title: noteData.title,
       content: noteData.content,
+      username: user,
     });
     return redirect('/notes');
   } else if (intent === 'delete') {

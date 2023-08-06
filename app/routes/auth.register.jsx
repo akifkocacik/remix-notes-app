@@ -1,19 +1,30 @@
-import { storeUsers } from '../data/users';
+import { createUser } from '../services/user.service';
 import { registerUser } from '../session.server';
+import { useActionData } from '@remix-run/react';
 
 export async function action({ request }) {
   const formData = await request.formData();
   const username = formData.get('username');
   const password = formData.get('password');
   const user = { username, password };
-  storeUsers(user);
-  console.log(username, password);
-  await registerUser(request, username);
+  try {
+    await createUser(user);
+
+    await registerUser(request, username);
+  } catch (e) {
+    return {
+      error: {
+        message: 'Username already exists',
+      },
+    };
+  }
 
   return null;
 }
 
 const RegisterPage = () => {
+  const data = useActionData();
+
   return (
     <div
       style={{
@@ -35,6 +46,7 @@ const RegisterPage = () => {
           <button type="submit">Button</button>
         </form>
       </div>
+      {JSON.stringify(data?.error)}
     </div>
   );
 };

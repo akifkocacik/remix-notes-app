@@ -7,11 +7,27 @@ export async function getNotes() {
   return notes;
 }
 
-export async function addNote({ title, content }) {
+export async function getNotesByUsername(username) {
+  const notes = await db.note.findMany({
+    where: {
+      user: {
+        username,
+      },
+    },
+  });
+  return notes;
+}
+
+export async function addNote({ title, content, username }) {
   await db.note.create({
     data: {
       title,
       content,
+      user: {
+        connect: {
+          username,
+        },
+      },
     },
   });
 }
